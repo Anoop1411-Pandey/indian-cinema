@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Indian Cinema - Your premier destination for regional movies across India">
+    <title>Indian Cinema | Regional Movie Hub</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-light: #ecf0f1;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: var(--primary-color) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-card {
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: none;
+            background: #2a2a2a;
+            height: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.15);
+        }
+
+        .movie-poster {
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .movie-card:hover .movie-poster {
+            filter: brightness(1.1);
+        }
+
+        .movie-language {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .movie-rating {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: gold;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .detail-poster {
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .badge-status {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .hero-section {
+            height: 70vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+                url('https://source.unsplash.com/random/1920x1080/?bollywood,cinema,india') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(transparent, #1a1a1a);
+        }
+
+        .cast-member {
+            background: #404040;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .cast-member:hover {
+            background: #505050;
+            transform: translateY(-3px);
+        }
+
+        .finance-info {
+            background: #363636;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .category-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .category-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 80px;
+            background: var(--accent-color);
+        }
+
+        .section-divider {
+            margin: 3rem 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .no-results {
+            background: #363636;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .movie-tag {
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            padding: 3px 8px;
+            background: var(--secondary-color);
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .watchlist-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            z-index: 10;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .watchlist-btn:hover {
+            background: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .watchlist-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .filter-container {
+            background: #363636;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .movie-poster {
+                height: 300px;
+            }
+            
+            .detail-poster {
+                max-height: 50vh;
+            }
+
+            .hero-section {
+                height: 60vh;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading">
+        <div class="spinner-border text-danger" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-film me-2"></i>Indian Cinema
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-globe me-1"></i>Languages
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" id="languageFilter">
+                            <li><a class="dropdown-item" href="#" data-language="all">All Languages</a></li>
+                            <li><a class="dropdown-item" href="#" data-language="Hindi">Hindi</a></li>
+                            <li><a class="dropdown-item" href="#" data-language="Tamil">Tamil</a></li>
+                            <li><a class="dropdown-item" href="#" data-language="Telugu">Telugu</a></li>
+                            <li><a class="dropdown-item" href="#" data-language="Malayalam">Malayalam</a></li>
+                            <li><a class="dropdown-item" href="#" data-language="Bengali">Bengali</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#trending">Trending</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#new-releases">New Releases</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#watchlist"><i class="fas fa-bookmark me-1"></i>Watchlist</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4 fw-bold">Experience Regional Cinema</h1>
+            <p class="lead mb-4">Discover Stories from Every Corner of India</p>
+            <div class="input-group mx-auto" style="max-width: 600px;">
+                <input type="search" id="searchInput" class="form-control form-control-lg" 
+                       placeholder="Search movies, actors, directors..." aria-label="Search movies">
+                <button class="btn btn-danger" type="button" id="searchButton">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container my-5 flex-grow-1">
+        <!-- Filters -->
+        <div id="filterContainer" class="filter-container mb-4">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="sortFilter" class="form-label">Sort By</label>
+                    <select id="sortFilter" class="form-select">
+                        <option value="relevance">Relevance</option>
+                        <option value="rating-high">Rating (High to Low)</option>
+                        <option value="rating-low">Rating (Low to High)</option>
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">All</option>
+                        <option value="Blockbuster">Blockbuster</option>
+                        <option value="Hit">Hit</option>
+                        <option value="Average">Average</option>
+                        <option value="Flop">Flop</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="yearFilter" class="form-label">Release Year</label>
+                    <select id="yearFilter" class="form-select">
+                        <option value="all">All Years</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="older">Before 2020</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Section -->
+        <section id="trending" class="mb-5">
+            <h2 class="category-title">Trending Movies</h2>
+            <div class="row g-4" id="trendingContainer"></div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- New Releases Section -->
+        <section id="new-releases" class="mb-5">
+            <h2 class="category-title">New Releases</h2>
+            <div class="row g-4" id="newReleasesContainer"></div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- Watchlist Section -->
+        <section id="watchlist" class="mb-5">
+            <h2 class="category-title">My Watchlist</h2>
+            <div class="row g-4" id="watchlistContainer"></div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- All Movies -->
+        <section id="all-movies" class="mb-5">
+            <h2 class="category-title">All Movies</h2>
+            <div class="row g-4" id="movieContainer"></div>
+        </section>
+
+        <!-- Search Results -->
+        <section id="searchResults" class="d-none mb-5">
+            <h2 class="category-title">Search Results</h2>
+            <div class="row g-4" id="searchResultsContainer"></div>
+        </section>
+
+        <!-- Movie Details -->
+        <div id="movieDetails" class="py-5 d-none">
+            <button onclick="goBack()" class="btn btn-primary mb-4">
+                <i class="fas fa-arrow-left me-2"></i>Back
+            </button>
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <img id="detailPoster" class="detail-poster img-fluid w-100" alt="Movie Poster">
+                    <div class="d-flex justify-content-between mt-3">
+                        <button id="watchlistToggleBtn" class="btn btn-outline-danger w-100">
+                            <i class="far fa-bookmark me-2"></i><span id="watchlistBtnText">Add to Watchlist</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 id="movieTitle" class="display-4 fw-bold mb-0"></h1>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3 fs-4">
+                                <i class="fas fa-star text-warning"></i>
+                                <span id="detailRating"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div id="detailGenres" class="mb-2"></div>
+                        <p class="text-muted"><span id="detailLanguage"></span> • <span id="releaseDate"></span> • <span id="duration"></span></p>
+                    </div>
+
+                    <div class="finance-info">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="fs-5"><strong>Budget:</strong> <span id="budget"></span></p>
+                                <p class="fs-5"><strong>Box Office:</strong> <span id="collection"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="fs-5"><strong>Status:</strong> <span id="status" class="badge badge-status"></span></p>
+                                <p class="fs-5"><strong>Production:</strong> <span id="production"></span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="mb-3"><i class="fas fa-info-circle me-2"></i>Details</h3>
+                        <p class="fs-5"><strong>Director:</strong> <span id="director"></span></p>
+                        <p class="fs-5"><strong>Writer:</strong> <span id="writer"></span></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="mb-3"><i class="fas fa-users me-2"></i>Cast</h3>
+                        <div id="cast" class="row g-3"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="mb-3"><i class="fas fa-book-open me-2"></i>Story</h3>
+                        <p id="story" class="lead fs-5"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>Celebrating India's diverse cinematic heritage since 2023</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white text-decoration-none">FAQ</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Careers</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Connect</h5>
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-instagram fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <p class="text-center mb-0">&copy; 2024 Indian Cinema. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Movie Data
+        const movies = [
+            {
+                id: 1,
+                title: "Pathaan",
+                poster: "https://m.media-amazon.com/images/M/MV5BM2QzM2IyNTMtODM5NS00MmI2LTk1ZWItOTFkOTY1NzEzNjNhXkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_.jpg",
+                director: "Siddharth Anand",
+                writer: "Shridhar Raghavan, Abbas Tyrewala",
+                duration: "2h 26min",
+                releaseDate: "2023-01-25",
+                budget: "₹250 Crore",
+                collection: "₹1050 Crore",
+                status: "Blockbuster",
+                production: "Yash Raj Films",
+                language: "Hindi",
+                genres: ["Action", "Thriller", "Spy"],
+                rating: 7.2,
+                cast: ["Shah Rukh Khan", "Deepika Padukone", "John Abraham", "Dimple Kapadia", "Ashutosh Rana"],
+                story: "An Indian spy races against time to thwart a dangerous terrorist plot orchestrated by a former RAW agent who holds a personal vendetta. As the stakes rise and the threat to national security grows, Pathaan must navigate a web of betrayal and international espionage to save his country.",
+                trending: true,
+                newRelease: false
+            },
+            {
+                id: 2,
+                title: "RRR",
+                poster: "https://m.media-amazon.com/images/M/MV5BODUwNDNjYzctODUxNy00ZTA2LWIyYTEtMDc5Y2E5ZjBmNTMzXkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_FMjpg_UX1000_.jpg",
+                director: "S.S. Rajamouli",
+                writer: "Vijayendra Prasad, S.S. Rajamouli",
+                duration: "3h 7min",
+                releaseDate: "2022-03-24",
+                budget: "₹550 Crore",
+                collection: "₹1200 Crore",
+                status: "Blockbuster",
+                production: "DVV Entertainment",
+                language: "Telugu",
+                genres: ["Action", "Drama", "Historical"],
+                rating: 8.5,
+                cast: ["Jr NTR", "Ram Charan", "Alia Bhatt", "Ajay Devgn", "Olivia Morris"],
+                story: "A fictional story about two legendary revolutionaries and their journey away from home before they started fighting for their country in the 1920s. Set in colonial India, this epic tale follows the friendship between two men who join forces against the British Raj.",
+                trending: true,
+                newRelease: false
+            },
+            {
+                id: 3,
+                title: "Kalki 2898 AD",
+                poster: "https://m.media-amazon.com/images/M/MV5BN2QzODY1YjItODY5Yi00ZDNhLWI4MzMtZjNlOWRhMzYzMGQ1XkEyXkFqcGdeQXVyMTY3ODkyNDkz._V1_.jpg",
+                director: "Nag Ashwin",
+                writer: "Nag Ashwin",
+                duration: "2h 49min",
+                releaseDate: "2024-06-27",
+                budget: "₹600 Crore",
+                collection: "₹1045 Crore",
+                status: "Blockbuster",
+                production: "Vyjayanthi Movies",
+                language: "Telugu",
+                genres: ["Sci-Fi", "Action", "Fantasy"],
+                rating: 8.1,
+                cast: ["Prabhas", "Deepika Padukone", "Amitabh Bachchan", "Kamal Haasan", "Disha Patani"],
+                story: "Set in a post-apocalyptic world in the distant future, the film follows the emergence of a prophesied hero who must face powerful forces to restore balance to a broken civilization. Drawing from Hindu mythology, it reimagines the arrival of Kalki, the final avatar of Vishnu.",
+                trending: true,
+                newRelease: true
+            },
+            {
+                id: 4,
+                title: "Brahmāstra Part One: Shiva",
+                poster: "https://m.media-amazon.com/images/M/MV5BZjY2MmI1ZWItNmU0Yy00NTdkLWJiYmQtNzFlZWNlMzkxZTZjXkEyXkFqcGdeQXVyNjkwOTg4MTA@._V1_.jpg",
+                director: "Ayan Mukerji",
+                writer: "Ayan Mukerji, Hussain Dalal",
+                duration: "2h 47min",
+                releaseDate: "2022-09-09",
+                budget: "₹410 Crore",
+                collection: "₹430 Crore",
+                status: "Average",
+                production: "Dharma Productions",
+                language: "Hindi",
+                genres: ["Fantasy", "Adventure", "Action"],
+                rating: 5.6,
+                cast: ["Ranbir Kapoor", "Alia Bhatt", "Amitabh Bachchan", "Nagarjuna Akkineni", "Mouni Roy"],
+                story: "A young man discovers he has a supernatural connection with fire and learns about the Brahmāstra, a celestial weapon of immense power. As dark forces seek to capture the weapon, he must embrace his destiny and harness his abilities to protect the world.",
+                trending: false,
+                newRelease: false
+            },
+            {
+                id: 5,
+                title: "Kantara",
+                poster: "https://m.media-amazon.com/images/M/MV5BMmIzMWMxYjEtZjQyZi00MjBkLWE4MTUtZTE3YjIxYWU5ODA5XkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_.jpg",
+                director: "Rishab Shetty",
+                writer: "Rishab Shetty",
+                duration: "2h 30min",
+                releaseDate: "2022-09-30",
+                budget: "₹16 Crore",
+                collection: "₹410 Crore",
+                status: "Blockbuster",
+                production: "Hombale Films",
+                language: "Kannada",
+                genres: ["Action", "Adventure", "Drama"],
+                rating: 8.3,
+                cast: ["Rishab Shetty", "Sapthami Gowda", "Kishore", "Achyuth Kumar", "Pramod Shetty"],
+                story: "Set in a fictional village of Dakshina Kannada, Kantara follows a traditional Kambala champion who has a tense relationship with a forest officer. A conflict arises between villagers and the authorities, intertwined with divine spirits and local beliefs.",
+                trending: true,
+                newRelease: false
+            },
+            {
+                id: 6,
+                title: "Stree",
+                poster: "https://m.media-amazon.com/images/M/MV5BMjk4NGZiMzAtODU1NS00MmQ4LWJiNmQtNWU5ZWU4Y2VmNWI0XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_.jpg",
+                director: "Amar Kaushik",
+                writer: "Raj Nidimoru, Krishna D.K.",
+                duration: "2h 8min",
+                releaseDate: "2018-08-31",
+                budget: "₹25 Crore",
+                collection: "₹180 Crore",
+                status: "Hit",
+                production: "Maddock Films",
+                language: "Hindi",
+                genres: ["Comedy", "Horror"],
+                rating: 7.6,
+                cast: ["Rajkummar Rao", "Shraddha Kapoor", "Pankaj Tripathi", "Aparshakti Khurana", "Abhishek Banerjee"],
+                story: "In the small town of Chanderi, a village is terrorized by a mysterious female spirit who abducts men at night. Following the local legend, a group of friends try to unravel the mystery and save their town from the vengeful ghost.",
+                trending: false,
+                newRelease: false
+            },
+            {
+                id: 7,
+                title: "Jawan",
+                poster: "https://m.media-amazon.com/images/M/MV5BNDA5OTM0MjgtZWJjMC00MzJjLTgyZWUtN2ExZTI0ZTI5OTQ3XkEyXkFqcGdeQXVyODE5NzE3OTE@._V1_.jpg",
+                director: "Atlee Kumar",
+                writer: "Atlee Kumar, S. Ramanagirivasan",
+                duration: "2h 49min",
+                releaseDate: "2023-09-07",
+                budget: "₹300 Crore",
+                collection: "₹1150 Crore",
+                status: "Blockbuster",
+                production: "Red Chillies Entertainment",
+                language: "Hindi",
+                genres: ["Action", "Thriller"],
+                rating: 7.0,
+                cast: ["Shah Rukh Khan", "Nayanthara", "Vijay Sethupathi", "Deepika Padukone", "Priyamani"],
+                story: "A man with a dual identity embarks on a mission to fight corruption and injustice. Seeking redemption for his past, he leads a group of skilled women to tackle powerful adversaries, while uncovering the truth behind his own complex history.",
+                trending: true,
+                newRelease: false
+            },
+            {
+                id: 8,
+                title: "Sita Ramam",
+                poster: "https://m.media-amazon.com/images/M/MV5BNjBiZjc3YzItYWQ0Ni00YjZlLWFjYTAtMTBhY2NkNjJkNTI5XkEyXkFqcGdeQXVyMTA3MDk2NDg2._V1_.jpg",
+                director: "Hanu Raghavapudi",
+                writer: "Hanu Raghavapudi, Jay Krishna",
+                duration: "2h 43min",
+                releaseDate: "2022-08-05",
+                budget: "₹30 Crore",
+                collection: "₹91 Crore",
+                status: "Hit",
+                production: "Swapna Cinema",
+                language: "Telugu",
+                genres: ["Romance", "Drama", "Historical"],
+                rating: 8.6,
+                cast: ["Dulquer Salmaan", "Mrunal Thakur", "Rashmika Mandanna", "Sumanth", "Gautham Vasudev Menon"],
+                story: "Set in 1964, a lieutenant receives a letter from a girl named Sita, sparking a beautiful love story. Years later, a young woman embarks on a journey to deliver the unread love letter to its intended recipient, discovering their epic romantic tale along the way.",
+                trending: false,
+                newRelease: false
+            },
+            {
+                id: 9,
+                title: "Fighter",
+                poster: "https://m.media-amazon.com/images/M/MV5BNDdjOWRiZTYtYjE5NS00MDk3LThjZjgtYTkyODBjZGU1MWMzXkEyXkFqcGdeQXVyOTI3MzI4MzY@._V1_.jpg",
+                director: "Siddharth Anand",
+                writer: "Ramon Chibb, Siddharth Anand",
+                duration: "2h 47min",
+                releaseDate: "2024-01-25",
+                budget: "₹250 Crore",
+                collection: "₹350 Crore",
+                status: "Hit",
+                production: "Viacom18 Studios",
+                language: "Hindi",
+                genres: ["Action", "Thriller", "Patriotic"],
+                rating: 6.5,
+                cast: ["Hrithik Roshan", "Deepika Padukone", "Anil Kapoor", "Karan Singh Grover", "Akshay Oberoi"],
+                story: "India's elite air warriors of the Air Dragons unit navigate personal challenges while defending the nation. Following a terrorist attack, they are called to action in a high-stakes aerial operation, testing their skills, courage, and determination.",
+                trending: false,
+                newRelease: true
+            },
+            {
+                id: 10,
+                title: "Manjummel Boys",
+                poster: "https://m.media-amazon.com/images/M/MV5BZjUyOGEwNjUtNjZlMi00YjBiLWJhYmMtNGY5ZjEzZjc4MmQ2XkEyXkFqcGdeQXVyMjkxNzQ1NDI@._V1_.jpg",
+                director: "Chidambaram",
+                writer: "Chidambaram",
+                duration: "2h 15min",
+                releaseDate: "2024-02-22",
+                budget: "₹18 Crore",
+                collection: "₹280 Crore",
+                status: "Blockbuster",
+                production: "Parava Films",
+                language: "Malayalam",
+                genres: ["Adventure", "Thriller", "Drama"],
+                rating: 8.6,
+                cast: ["Soubin Shahir", "Sreenath Bhasi", "Balu Varghese", "Ganapathi", "Jean Paul Lal"],
+                story: "Based on a true incident, a group of friends from Manjummel embark on a vacation to Kodaikanal. Their trip takes a terrifying turn when one of them gets trapped in the treacherous Guna Caves, leading to a desperate rescue mission against deadly odds.",
+                trending: true,
+                newRelease: true
+            }
+        ];
+
+        let lastSection = 'movieContainer';
+        let currentLanguageFilter = 'all';
+        let watchlist = JSON.parse(localStorage.getItem('watchlist')) || [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showLoading();
+            
+            // Load and render movies after a short delay to simulate API fetch
+            setTimeout(() => {
+                initializeWebsite();
+                hideLoading();
+            }, 1500);
+            
+            // Setup event listeners
+            setupSearch();
+            setupFilters();
+            setupLanguageFilter();
+            setupWatchlistToggle();
+        });
+
+        function initializeWebsite() {
+            // Render different sections
+            renderTrendingMovies();
+            renderNewReleases();
+            renderWatchlist();
+            renderAllMovies();
+        }
+
+        // Loading functions
+        function showLoading() {
+            document.getElementById('loading').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Render Movies by Section
+        function renderTrendingMovies() {
+            const trendingMovies = movies.filter(movie => movie.trending);
+            renderMoviesToContainer(trendingMovies, 'trendingContainer');
+        }
+
+        function renderNewReleases() {
+            const newReleases = movies.filter(movie => movie.newRelease);
+            renderMoviesToContainer(newReleases, 'newReleasesContainer');
+        }
+
+        function renderWatchlist() {
+            const watchlistMovies = movies.filter(movie => watchlist.includes(movie.id));
+            const container = document.getElementById('watchlistContainer');
+            
+            if (watchlistMovies.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="no-results p-4">
+                            <i class="fas fa-bookmark fa-3x mb-3 text-muted"></i>
+                            <h3>Your watchlist is empty</h3>
+                            <p>Add movies to your watchlist to see them here</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            renderMoviesToContainer(watchlistMovies, 'watchlistContainer');
+        }
+
+        function renderAllMovies() {
+            renderMoviesToContainer(movies, 'movieContainer');
+        }
+
+        // Render Movies to Container
+        function renderMoviesToContainer(movieList, containerId) {
+            const container = document.getElementById(containerId);
+            
+            if (!container) return;
+            
+            if (movieList.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12">
+                        <div class="no-results">
+                            <i class="fas fa-film fa-3x mb-3 text-muted"></i>
+                            <h3>No movies found</h3>
+                            <p>Try adjusting your filters or search criteria</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = movieList.map(movie => `
+                <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4 fade-in">
+                    <article class="movie-card" data-id="${movie.id}">
+                        <div class="movie-language">${movie.language}</div>
+                        <div class="movie-rating">
+                            <i class="fas fa-star"></i> ${movie.rating.toFixed(1)}
+                        </div>
+                        <img src="${movie.poster}" 
+                             class="card-img-top movie-poster" 
+                             alt="${movie.title} Poster"
+                             loading="lazy">
+                        <div class="card-body">
+                            <h2 class="h5 card-title">${movie.title}</h2>
+                            <p class="card-text text-muted small mb-1">${movie.director}</p>
+                            <p class="card-text small mb-2">${formatDate(movie.releaseDate)} • ${movie.duration}</p>
+                            <div class="mb-3">
+                                ${movie.genres.map(genre => `<span class="movie-tag">${genre}</span>`).join('')}
+                            </div>
+                            <p class="card-text small text-truncate">${movie.story.substring(0, 80)}...</p>
+                        </div>
+                        <button class="watchlist-btn ${watchlist.includes(movie.id) ? 'active' : ''}" 
+                                data-id="${movie.id}" 
+                                onclick="toggleWatchlistItem(event, ${movie.id})">
+                            <i class="fas ${watchlist.includes(movie.id) ? 'fa-bookmark' : 'fa-bookmark'}"></i>
+                        </button>
+                    </article>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll(`#${containerId} .movie-card`).forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger movie details if clicking on watchlist button
+                    if (e.target.closest('.watchlist-btn')) return;
+                    
+                    const movieId = parseInt(this.dataset.id);
+                    showMovieDetails(movieId);
+                });
+            });
+        }
+
+        // Show Movie Details
+        function showMovieDetails(movieId) {
+            showLoading();
+            
+            // Store last active section
+            const visibleSection = document.querySelector('main > section:not(.d-none)');
+            if (visibleSection) {
+                lastSection = visibleSection.id;
+            }
+            
+            const movie = movies.find(m => m.id === movieId);
+            if (!movie) {
+                hideLoading();
+                alert('Movie details not found.');
+                return;
+            }
+
+            // Hide all sections
+            document.querySelectorAll('main > section').forEach(section => {
+                section.classList.add('d-none');
+            });
+            
+            // Hide filters
+            document.getElementById('filterContainer').classList.add('d-none');
+            
+            // Show movie details
+            document.getElementById('movieDetails').classList.remove('d-none');
+
+            // Populate details
+            document.getElementById('detailPoster').src = movie.poster;
+            document.getElementById('movieTitle').textContent = movie.title;
+            document.getElementById('director').textContent = movie.director;
+            document.getElementById('writer').textContent = movie.writer || 'Not Available';
+            document.getElementById('duration').textContent = movie.duration;
+            document.getElementById('releaseDate').textContent = formatDate(movie.releaseDate);
+            document.getElementById('budget').textContent = movie.budget;
+            document.getElementById('collection').textContent = movie.collection;
+            document.getElementById('story').textContent = movie.story;
+            document.getElementById('production').textContent = movie.production;
+            document.getElementById('detailRating').textContent = movie.rating.toFixed(1);
+            document.getElementById('detailLanguage').textContent = movie.language;
+
+            // Update watchlist button
+            const watchlistBtn = document.getElementById('watchlistToggleBtn');
+            const watchlistBtnText = document.getElementById('watchlistBtnText');
+            
+            if (watchlist.includes(movie.id)) {
+                watchlistBtn.classList.add('btn-danger');
+                watchlistBtn.classList.remove('btn-outline-danger');
+                watchlistBtnText.textContent = 'Remove from Watchlist';
+            } else {
+                watchlistBtn.classList.remove('btn-danger');
+                watchlistBtn.classList.add('btn-outline-danger');
+                watchlistBtnText.textContent = 'Add to Watchlist';
+            }
+            
+            watchlistBtn.onclick = () => toggleWatchlistDetail(movie.id);
+
+            // Genres
+            document.getElementById('detailGenres').innerHTML = movie.genres.map(genre => 
+                `<span class="badge bg-secondary me-2">${genre}</span>`
+            ).join('');
+
+            // Status Badge
+            const status = document.getElementById('status');
+            status.textContent = movie.status;
+            status.className = 'badge badge-status ' + (
+                movie.status.toLowerCase() === 'blockbuster' ? 'bg-success' :
+                movie.status.toLowerCase() === 'hit' ? 'bg-primary' :
+                movie.status.toLowerCase() === 'average' ? 'bg-warning' :
+                movie.status.toLowerCase() === 'flop' ? 'bg-danger' : 'bg-secondary'
+            );
+
+            // Cast
+            const castContainer = document.getElementById('cast');
+            castContainer.innerHTML = movie.cast.map(actor => `
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="cast-member">
+                        <i class="fas fa-user-circle fa-2x mb-2"></i>
+                        <div>${actor}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update browser history
+            window.history.pushState({page: 'details', id: movie.id}, movie.title, `#movie=${movie.id}`);
+            
+            // Scroll to top
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            
+            setTimeout(() => {
+                hideLoading();
+            }, 500);
+        }
+
+        // Return to previous section
+        function goBack() {
+            // Hide movie details
+            document.getElementById('movieDetails').classList.add('d-none');
+            
+            // Show filters
+            document.getElementById('filterContainer').classList.remove('d-none');
+            
+            // Show last active section
+            if (lastSection && document.getElementById(lastSection)) {
+                document.getElementById(lastSection).classList.remove('d-none');
+            } else {
+                document.getElementById('movieContainer').classList.remove('d-none');
+            }
+            
+            // Update browser history
+            window.history.pushState({page: 'home'}, 'Home', window.location.pathname);
+            
+            // Scroll to where user was before
+            if (window.lastScrollPosition) {
+                window.scrollTo({top: window.lastScrollPosition, behavior: 'smooth'});
+            }
+        }
+
+        // Search Functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+
+            const handleSearch = () => {
+                showLoading();
+                
+                const term = searchInput.value.toLowerCase().trim();
+                
+                if (!term) {
+                    // Reset to default view if search is empty
+                    document.querySelectorAll('main > section').forEach(section => {
+                        section.classList.remove('d-none');
+                    });
+                    document.getElementById('searchResults').classList.add('d-none');
+                    hideLoading();
+                    return;
+                }
+                
+                // Hide all sections except search results
+                document.querySelectorAll('main > section').forEach(section => {
+                    section.classList.add('d-none');
+                });
+                
+                const filtered = movies.filter(movie =>
+                    movie.title.toLowerCase().includes(term) ||
+                    movie.director.toLowerCase().includes(term) ||
+                    movie.story.toLowerCase().includes(term) ||
+                    movie.genres.some(genre => genre.toLowerCase().includes(term)) ||
+                    movie.cast.some(actor => actor.toLowerCase().includes(term))
+                );
+                
+                // Show search results section
+                document.getElementById('searchResults').classList.remove('d-none');
+                
+                // Render filtered movies
+                renderMoviesToContainer(filtered, 'searchResultsContainer');
+                
+                setTimeout(() => {
+                    hideLoading();
+                }, 500);
+            };
+
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            
+            searchButton.addEventListener('click', handleSearch);
+        }
+
+        // Filter Setup
+        function setupFilters() {
+            const sortFilter = document.getElementById('sortFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const yearFilter = document.getElementById('yearFilter');
+            
+            const applyFilters = () => {
+                showLoading();
+                
+                // Get filter values
+                const sortBy = sortFilter.value;
+                const status = statusFilter.value;
+                const year = yearFilter.value;
+                
+                // Apply filters
+                let filteredMovies = [...movies];
+                
+                // Apply language filter
+                if (currentLanguageFilter !== 'all') {
+                    filteredMovies = filteredMovies.filter(movie => 
+                        movie.language === currentLanguageFilter
+                    );
+                }
+                
+                // Apply status filter
+                if (status !== 'all') {
+                    filteredMovies = filteredMovies.filter(movie => 
+                        movie.status === status
+                    );
+                }
+                
+                // Apply year filter
+                if (year !== 'all') {
+                    if (year === 'older') {
+                        filteredMovies = filteredMovies.filter(movie => 
+                            new Date(movie.releaseDate).getFullYear() < 2020
+                        );
+                    } else {
+                        const yearNum = parseInt(year);
+                        filteredMovies = filteredMovies.filter(movie => 
+                            new Date(movie.releaseDate).getFullYear() === yearNum
+                        );
+                    }
+                }
+                
+                // Apply sorting
+                switch(sortBy) {
+                    case 'rating-high':
+                        filteredMovies.sort((a, b) => b.rating - a.rating);
+                        break;
+                    case 'rating-low':
+                        filteredMovies.sort((a, b) => a.rating - b.rating);
+                        break;
+                    case 'newest':
+                        filteredMovies.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+                        break;
+                    case 'oldest':
+                        filteredMovies.sort((a, b) => new Date(a.releaseDate) - new Date(b.releaseDate));
+                        break;
+                    default:
+                        // Default sorting by relevance (no change)
+                        break;
+                }
+                
+                // Render filtered movies
+                renderMoviesToContainer(filteredMovies, 'movieContainer');
+                
+                setTimeout(() => {
+                    hideLoading();
+                }, 500);
+            };
+            
+            // Add event listeners
+            sortFilter.addEventListener('change', applyFilters);
+            statusFilter.addEventListener('change', applyFilters);
+            yearFilter.addEventListener('change', applyFilters);
+        }
+
+        // Language Filter
+        function setupLanguageFilter() {
+            const languageLinks = document.querySelectorAll('#languageFilter a');
+            
+            languageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showLoading();
+                    
+                    const language = this.dataset.language;
+                    currentLanguageFilter = language;
+                    
+                    // Update active class
+                    languageLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Apply filters
+                    let filteredMovies = movies;
+                    
+                    if (language !== 'all') {
+                        filteredMovies = movies.filter(movie => movie.language === language);
+                    }
+                    
+                    // Render filtered movies
+                    renderMoviesToContainer(filteredMovies, 'movieContainer');
+                    
+                    // Update trending and new release sections
+                    if (language === 'all') {
+                        renderTrendingMovies();
+                        renderNewReleases();
+                    } else {
+                        const filteredTrending = filteredMovies.filter(movie => movie.trending);
+                        const filteredNewReleases = filteredMovies.filter(movie => movie.newRelease);
+                        
+                        renderMoviesToContainer(filteredTrending, 'trendingContainer');
+                        renderMoviesToContainer(filteredNewReleases, 'newReleasesContainer');
+                    }
+                    
+                    setTimeout(() => {
+                        hideLoading();
+                    }, 500);
+                });
+            });
+        }
+
+        // Watchlist functions
+        function setupWatchlistToggle() {
+            const watchlistToggleBtn = document.getElementById('watchlistToggleBtn');
+            if (watchlistToggleBtn) {
+                watchlistToggleBtn.addEventListener('click', function() {
+                    const movieId = parseInt(this.dataset.id);
+                    toggleWatchlistDetail(movieId);
+                });
+            }
+        }
+
+        function toggleWatchlistItem(event, movieId) {
+            event.stopPropagation();
+            
+            const index = watchlist.indexOf(movieId);
+            const btn = event.currentTarget;
+            
+            if (index === -1) {
+                // Add to watchlist
+                watchlist.push(movieId);
+                btn.classList.add('active');
+            } else {
+                // Remove from watchlist
+                watchlist.splice(index, 1);
+                btn.classList.remove('active');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('watchlist', JSON.stringify(watchlist));
+            
+            // Update watchlist section
+            renderWatchlist();
+        }
+
+        function toggleWatchlistDetail(movieId) {
+            const index = watchlist.indexOf(movieId);
+            const btn = document.getElementById('watchlistToggleBtn');
+            const btnText = document.getElementById('watchlistBtnText');
+            
+            if (index === -1) {
+                // Add to watchlist
+                watchlist.push(movieId);
+                btn.classList.add('btn-danger');
+                btn.classList.remove('btn-outline-danger');
+                btnText.textContent = 'Remove from Watchlist';
+            } else {
+                // Remove from watchlist
+                watchlist.splice(index, 1);
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-outline-danger');
+                btnText.textContent = 'Add to Watchlist';
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('watchlist', JSON.stringify(watchlist));
+            
+            // Update watchlist section
+            renderWatchlist();
+        }
+
+        // Helper Functions
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Handle browser back button
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.page === 'details') {
+                showMovieDetails(event.state.id);
+            } else {
+                // Show all movies
+                goBack();
+            }
+        });
+
+        // Store scroll position before showing movie details
+        document.querySelectorAll('.movie-card').forEach(card => {
+            card.addEventListener('click', function() {
+                window.lastScrollPosition = window.scrollY;
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
